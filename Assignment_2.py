@@ -7,42 +7,27 @@ system("clear")
 
 
 class Orthogonalization:
-    def gramschmidt(V):
-        m = np.shape(V)[0] # rows
-        n = np.shape(V)[1] # cols
-        if(m>=n):
-            U = [];            
+    def Gramschmidt(A):
+        n = np.shape(A)[0]
+        m = np.shape(A)[1]
+    
+        if m >= n:
 
-            for i in range(0,n):
-                if(i == 0):
-                    U = []
-                    U.append(V[:,i])
-                    # print(U)
-                    # print()
+            for i in range(m):
 
-                elif(i>0):
-                    v_k = V[:,i]
-                    # print(v_k)
+                q = A[:, i]
+                
+                for j in range(i):
+                    q = q - np.dot(A[:, j], A[:, i]) * A[:, j]
+                
+                if np.array_equal(q, np.zeros(q.shape)):
+                    raise np.linalg.LinAlgError("The column vectors are not linearly independent")
+                
+                q = q / np.sqrt(np.dot(q, q))
 
-                    # U_k = v_k - sum( dot(v_k,u_i) * u_i / abs(u_i)^2 )
+                A[:, i] = q
 
-                    sigma = np.zeros([1,m])[0]
-                    # print(sigma)
-                    for j in range(0,i):
-                        sigma = np.add(sigma,(np.dot(v_k, U[j]) / np.dot(U[j], U[j]) ) * U[j]) # sum(...)
-                    u = np.add(v_k, -sigma) # v_k - sum(...)
-                    U.append(u / np.linalg.norm(u)) # make unit length
-                    # print(U)
-                    # print(U)
-
-            # return np.around(U,2)
-            # TODO:
-            # Subtracting the projections of vi onto the ej all at once causes the problem. Split the computation into smaller parts by removing the projections one at a time
-            return U
-
-        else:
-            print("error: m>n does not hold")
-            return
+        return A
 
     def QR_householder(A):
         # m = np.shape(A)[1]
@@ -77,9 +62,9 @@ class Orthogonalization:
         
 
 
-_A = np.array([[1,2,4],[0,0,5], [0,3,6]])
-_B = np.array([[1,2,4,5],[0,0,5,6], [0,3,6,9],[1,2,3,4],[9,1,3,3]])
-_C = np.array([[1.,-7.,0.],[2.,-20.,5.],[2.,1.,1.]])
+A = np.array([[1,2,4],[0,0,5], [0,3,6]])
+B = np.array([[1,2,4,5],[0,0,5,6], [0,3,6,9],[1,2,3,4],[9,1,3,3]])
+C = np.array([[1.,-7.,0.],[2.,-20.,5.],[2.,1.,1.]])
 
 
 
@@ -116,16 +101,11 @@ def ex_4(A):
 
 # # EXECUTE TESTS:
 # ex_1(A)
-# ex_2(_C)
-# ex_3(_B)
+# ex_2(A)
+ex_3(C)
 # ex_4(_C)
 
 
-
-# test
-A=np.array([[1,2],[4,5],[7,8]])
-Q=np.linalg.qr(A)[0]
-R = Orthogonalization.QR_householder(A)
-print(A)
-print(Q)
-print(np.matmul(Q,R))
+# print(A)
+print()
+# print(Orthogonalization.newGramschmidt(A))
